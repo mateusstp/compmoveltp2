@@ -18,7 +18,6 @@ public class ControlGameGalaxian extends Thread {
 
     private static final String CATEGORIA = "AppNum53";
 
-    Aliens ball;
     Nave nave;
     ArrayList<Enemy> enemies;
     private int screenWidth_x, screenHeight_y;
@@ -30,11 +29,11 @@ public class ControlGameGalaxian extends Thread {
     private int atual=-1;
     private Context ctx;
     private int ntiro=0;
-
+    int gameover=1;
     private Handler handler;
 
     public ControlGameGalaxian(Handler h, int screenWidth_x, int screenHeight_y, Nave r, ArrayList<Enemy> en, Context ct) {
-ctx=ct;
+        ctx=ct;
         this.handler = h;
 
         this.screenWidth_x = screenWidth_x;
@@ -57,12 +56,14 @@ ctx=ct;
             try {
                 Message message = new Message();
                 //defino um codigo para controle.
-                message.what = 1;
+              //  message.what = 1;
                 //delay
-                Thread.sleep(5);
-              //  collisionBallnave();
-               // collisionWall();
-
+                Thread.sleep(6);
+              //  collisionShotEnemyNave();
+                //defino um codigo para controle.
+                message.what = gameover;
+                collisionShotNaveEnemy();
+                nave.moveShots();
                 if(atual==-1)
                 {
                     int next;
@@ -121,78 +122,30 @@ ctx=ct;
         }
     }
 
-    private void collisionWall() {
-        /**calc bounds x and y **/
-        int boundX;
-        int boundY;
-        if (ball.getdirectionX() == 1) {
-            boundX = ball.getxBall() + ball.getBallWidth_x() - 14;
-        } else {
-            boundX = ball.getxBall() + 14;
+    private void collisionShotNaveEnemy() {
+
+        for (int ishot = 0; ishot < nave.getArrayShotsNave().size(); ishot++) {
+            for (int ien = 0; ien < enemies.size(); ien++) {
+                boolean collision = enemies.get(ien).getEnemy().copyBounds().contains(nave.getArrayShotsNave().get(ishot).getxShotNave(), nave.getArrayShotsNave().get(ishot).getyShotNave());
+                if (collision) {
+                    enemies.remove(ien);
+                    nave.getArrayShotsNave().remove(ishot);
+                }
+
+            }
         }
-
-        if (ball.getdirectionY() == 1) {
-            boundY = ball.getyBall() + ball.getBallHeight_y() - 14;
-        } else {
-            boundY = ball.getyBall() + 14;
-        }
-
-
-        /**verify collision wall**/
-        if (boundX >= boundright) {
-
-            if (ball.getdirectionX() == 1 && ball.getdirectionY() == -1) {
-                ball.setdirection(-1, -1);
-            } else {
-                ball.setdirection(-1, 1);
-            }
-        } else if (boundY <= boundtop) {
-            if (ball.getdirectionX() == 1 && ball.getdirectionY() == -1) {
-                ball.setdirection(1, 1);
-            } else {
-                ball.setdirection(-1, 1);
-            }
-        } else if (boundX <= boundleft) {
-            if (ball.getdirectionX() == -1 && ball.getdirectionY() == -1) {
-                ball.setdirection(1, -1);
-            } else {
-                ball.setdirection(1, 1);
-            }
-        } else if (boundY >= bounddown) {
-            if (ball.getdirectionX() == -1 && ball.getdirectionY() == 1) {
-                ball.setdirection(1, -1);
-            } else {
-                ball.setdirection(-1, -1);
-            }
-
-        }
-
-
     }
 
-
-    private void collisionBallnave() {
-
-        //boolean  colisao= rec.getnave().copyBounds().contains((int) x, (int) y);
-        boolean boundCollisionY = ball.getyBall() - 14 == (int) (screenHeight_y - nave.getNaveHeight_y() * 1.8);
-
-        if (boundCollisionY) {
-
-            boolean boundHigherCollisionX = ball.getxBall() + ball.getBallWidth_x() - 14 <= nave.getxNave() + nave.getNaveWidth_x() * 1.2;
-            boolean boundBelowCollisionX = ball.getxBall() - ball.getBallWidth_x() + 14 >= nave.getxNave() - nave.getNaveWidth_x() * 0.7;
-
-            if (boundHigherCollisionX && boundBelowCollisionX) {
-                if (nave.getdirection() == 0) {
-                    ball.setdirection(ball.getdirectionX(), -1 * ball.getdirectionY());
-                } else if (nave.getdirection() == 1) {
-                    ball.setdirection(1, -1);
-                } else if (nave.getdirection() == -1) {
-                    ball.setdirection(-1, -1);
+    /*private void collisionShotEnemyNave() {
+        for (int ien = 0; ien < enemies.size(); ien++) {
+            for (int ishoten = 0; ishoten < enemies.get(ien).getArrayShotsEnemy().size(); ishoten++) {
+                boolean collision = nave.getNaveDrawable().copyBounds().contains(enemies.get(ien).getArrayShotsEnemy().get(ishoten).getxShotEnemy(), enemies.get(ien).getArrayShotsEnemy().get(ishoten).getyShotEnemy());
+                if (collision) {
+                   // gameover = 0;
                 }
             }
         }
-    }
-
+    }*/
 }
 
 

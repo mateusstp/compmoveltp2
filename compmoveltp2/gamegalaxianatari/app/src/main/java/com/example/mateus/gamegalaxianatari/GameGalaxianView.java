@@ -2,8 +2,11 @@ package com.example.mateus.gamegalaxianatari;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,14 +20,15 @@ import java.util.ArrayList;
 public class GameGalaxianView extends View {
 
     private static final String CATEGORIA = "AppNum53";
-    int xN;
-    private boolean selecionou;
+    private int xN;
+    private boolean down;
     private int larguraTela, alturaTela;
 
     private Handler handler;
-    private ControlGameGalaxian controlBall;
+    private ControlGameGalaxian controlGalaxian;
     private Nave nave;
     private ArrayList<Enemy> enemies;
+    private boolean move=false;
 
     public GameGalaxianView(Context context) {
         super(context, null);
@@ -51,7 +55,7 @@ public class GameGalaxianView extends View {
         enemies.add(new Enemy(context, 17));
         enemies.add(new Enemy(context, 18));
         enemies.add(new Enemy(context,19));
-
+        move=false;
         setFocusable(true);
 
     }
@@ -59,6 +63,7 @@ public class GameGalaxianView extends View {
     @Override
 //Callback para quando a tela é iniciada ou redimensionada
     protected void onSizeChanged(int width, int height, int oldw, int oldh) {
+        this.setBackgroundColor(Color.BLACK);
         super.onSizeChanged(width, height, oldw, oldh);
         this.alturaTela = height;
         this.larguraTela = width;
@@ -71,7 +76,7 @@ public class GameGalaxianView extends View {
         };
 
 
-        nave.setyNave(height - nave.getNaveHeight_y());
+        nave.setyNave(height - nave.getNaveHeight_y()-30);
         nave.setxNave(width / 2 - (nave.getNaveWidth_x() / 2));
         xN=nave.getxNave();
 
@@ -85,8 +90,8 @@ public class GameGalaxianView extends View {
             }
         }
 
-        controlBall = new ControlGameGalaxian(handler,larguraTela,alturaTela,nave,enemies,getContext());
-        controlBall.start();
+        controlGalaxian = new ControlGameGalaxian(handler,larguraTela,alturaTela,nave,enemies,getContext());
+        controlGalaxian.start();
 
     }
 
@@ -97,7 +102,7 @@ public class GameGalaxianView extends View {
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         nave.drawNave(canvas);
-
+        nave.drawShots(canvas);
         for(int x=0; x<enemies.size();x++)
         {
             if(enemies.get(x)!=null) {
@@ -109,8 +114,79 @@ public class GameGalaxianView extends View {
 
 
     @Override
-//Move a imagem
+    //Move a imagem
+
     public boolean onTouchEvent(MotionEvent event) {
+    float x = event.getX();
+    float y = event.getY();
+
+    switch (event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            Log.d(CATEGORIA, "ACTION_DOWN");
+            //Inicia movimento se pressionou a imagem
+            down = nave.getNaveDrawable().copyBounds().contains((int) x, (int) y);
+            move=false;
+            break;
+        case MotionEvent.ACTION_MOVE:
+            Log.d(CATEGORIA,"ACTION_MOVE");
+            //Arrasta o boneco
+
+            if (down) {
+                move=true;
+                if (x - nave.getNaveWidth_x()/ 2 > 0 & x + nave.getNaveWidth_x()/ 2 < larguraTela) {
+                    //  this.xN = (int) x - (nave.getnaveWidth_x() / 2);
+
+                    if((xN-nave.getxNave())>0){
+                        nave.setdirection(1);
+                    }else if((xN-nave.getxNave())<0){
+                        nave.setdirection(-1);
+                    }else{
+                        nave.setdirection(0);
+                    }
+
+                    xN=nave.getxNave();
+                    nave.setxNave(this.xN = (int) x - (nave.getNaveWidth_x() / 2));
+
+                }
+
+
+
+            }
+            break;
+        case MotionEvent.ACTION_UP:
+            Log.d(CATEGORIA, "ACTION_UP");
+            //Finaliza movimento
+            //boolean up = down = nave.getNaveDrawable().copyBounds().contains((int) x, (int) y);
+            if(down && !move){
+                move=false;
+                Log.d(CATEGORIA, "Move true selecio true altura: " + alturaTela);
+                ShotNave ns = new ShotNave(getContext(),nave.getxNave()+nave.getNaveWidth_x()/2-10, nave.getyNave()-nave.getNaveHeight_y()/2+15);
+                nave.getArrayShotsNave().add(ns);
+                MediaPlayer mp = MediaPlayer.create(getContext(), R.raw.lazermp3);
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+
+                        mp.release();
+                    }
+
+                });
+                mp.start();
+
+
+                Log.d(CATEGORIA, "Move true selecio true");
+            }
+
+            break;
+    }
+    nave.moveShots();
+    invalidate();
+    return true;
+}
+
+//Move a imagem
+    /*public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
 
@@ -150,7 +226,7 @@ public class GameGalaxianView extends View {
         invalidate();
         return true;
     }
-
+*/
 
     /**
      * Método responsável pelo controle de Message do Handler * * @param msg Message
