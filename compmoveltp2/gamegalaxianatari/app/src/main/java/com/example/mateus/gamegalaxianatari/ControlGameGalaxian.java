@@ -49,7 +49,7 @@ public class ControlGameGalaxian extends Thread {
                 //defino um codigo para controle.
                 message.what = 1;
                 //delay
-                Thread.sleep(5);
+                Thread.sleep(1);
                 collisionBallnave();
                 collisionWall();
                 ball.move();
