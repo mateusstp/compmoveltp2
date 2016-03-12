@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 //import java.util.logging.Handler;
 
@@ -20,22 +21,23 @@ public class ControlGameGalaxian extends Thread {
     Nave nave;
     ArrayList<Enemy> enemies;
     private int screenWidth_x, screenHeight_y;
-
+    private boolean enemyActivated=false;
     private int boundtop;
     private int bounddown;
     private int boundleft;
     private int boundright;
+    private int atual=-1;
 
     private Handler handler;
 
-    public ControlGameGalaxian(Handler h, int screenWidth_x, int screenHeight_y, Aliens ball, Nave r, ArrayList<Enemy> en) {
+    public ControlGameGalaxian(Handler h, int screenWidth_x, int screenHeight_y, Nave r, ArrayList<Enemy> en) {
 
         this.handler = h;
 
         this.screenWidth_x = screenWidth_x;
         this.screenHeight_y = screenHeight_y;
 
-        this.ball = ball;
+
         this.nave = r;
 
         this.enemies=en;
@@ -46,18 +48,61 @@ public class ControlGameGalaxian extends Thread {
         boundright = screenWidth_x;
     }
 
-
+    boolean right=true;
     public void run() {
-        for (; ; ) {
+        for (;;) {
             try {
                 Message message = new Message();
                 //defino um codigo para controle.
                 message.what = 1;
                 //delay
-                Thread.sleep(1);
-                collisionBallnave();
-                collisionWall();
-                ball.move();
+                Thread.sleep(5);
+              //  collisionBallnave();
+               // collisionWall();
+
+                if(atual==-1)
+                {
+                    int next;
+                    Random rand = new Random();
+                    next = (rand.nextInt()*1000)%21;
+                    if( enemies.get(next)!=null) {
+                        enemies.get(next).setAtPosition();
+                        enemies.get(next).move();
+                        atual=next;
+                    }
+
+                }
+                else
+                {
+                    if( enemies.get(atual)!=null) {
+                        enemies.get(atual).setAtPosition();
+                        enemies.get(atual).move();
+                    }
+                    else
+                        atual=-1;
+                }
+
+                for(int i=0; i<enemies.size();i++) {
+                    if((enemies.get(i).getxEnemy()+enemies.get(i).getEnemyWidth_x())==screenWidth_x)
+                    {
+                        right=false;
+                        break;
+                    }
+
+                    if (enemies.get(i).getxEnemy() == 0) {
+                        right = true;
+                        break;
+                    }
+                }
+                for(int x=0; x<enemies.size();x++)
+                {
+                    if(enemies.get(x)!=null && enemies.get(x).atPosition()==true) {
+                        if (right)
+                            enemies.get(x).moveNormallyRight();
+                        else
+                            enemies.get(x).moveNormallyLeft();
+                    }
+                }
                 handler.sendMessage(message);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -103,7 +148,7 @@ public class ControlGameGalaxian extends Thread {
                 ball.setdirection(1, 1);
             }
         } else if (boundY >= bounddown) {
-            if (ball.getdirectionX() == 1 && ball.getdirectionY() == 1) {
+            if (ball.getdirectionX() == -1 && ball.getdirectionY() == 1) {
                 ball.setdirection(1, -1);
             } else {
                 ball.setdirection(-1, -1);
@@ -136,6 +181,7 @@ public class ControlGameGalaxian extends Thread {
             }
         }
     }
+
 }
 
 

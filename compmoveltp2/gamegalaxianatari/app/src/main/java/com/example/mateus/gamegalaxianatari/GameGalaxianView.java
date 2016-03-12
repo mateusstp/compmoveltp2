@@ -23,15 +23,12 @@ public class GameGalaxianView extends View {
 
     private Handler handler;
     private ControlGameGalaxian controlBall;
-    private Aliens ball;
     private Nave nave;
-    private Enemy en1;
     private ArrayList<Enemy> enemies;
 
     public GameGalaxianView(Context context) {
         super(context, null);
 
-        ball = new Aliens(context);
         nave = new Nave(context);
         enemies = new ArrayList<Enemy>();
         enemies.add(new Enemy(context, 0));
@@ -78,19 +75,17 @@ public class GameGalaxianView extends View {
         nave.setxNave(width / 2 - (nave.getNaveWidth_x() / 2));
         xN=nave.getxNave();
 
-        ball.setxBall(width / 2 - (ball.getBallWidth_x() / 2));
-        ball.setyBall(height / 2 - (ball.getBallHeight_y() / 2));
-
         for(int x=0; x<enemies.size();x++)
         {
-            enemies.get(x).setEnemyHeight_y(height/12);
-            enemies.get(x).setEnemyWidth_x(width / 18);
-            enemies.get(x).setxEnemy(width);
-            enemies.get(x).setyEnemy(height);
-
+            if(enemies.get(x)!=null) {
+                enemies.get(x).setEnemyHeight_y(height / 12);
+                enemies.get(x).setEnemyWidth_x(width / 18);
+                enemies.get(x).setxEnemy(width);
+                enemies.get(x).setyEnemy(height);
+            }
         }
 
-        controlBall = new ControlGameGalaxian(handler,larguraTela,alturaTela,ball,nave,enemies);
+        controlBall = new ControlGameGalaxian(handler,larguraTela,alturaTela,nave,enemies);
         controlBall.start();
 
     }
@@ -102,10 +97,11 @@ public class GameGalaxianView extends View {
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         nave.drawNave(canvas);
-        ball.drawBall(canvas);
         for(int x=0; x<enemies.size();x++)
         {
-            enemies.get(x).drawEnemy(canvas);
+            if(enemies.get(x)!=null) {
+                enemies.get(x).drawEnemy(canvas);
+            }
         }
     }
 

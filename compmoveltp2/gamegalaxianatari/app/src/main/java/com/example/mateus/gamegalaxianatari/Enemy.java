@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import java.util.Random;
+
 
 /**
  * Created by mateus on 10/02/16.
@@ -15,6 +17,7 @@ public class Enemy extends View{
     private int widthScreen;
     private int heightScreen;
     private int x;
+    private boolean position=true;
     private int y;
     private Drawable enemy;
     private int Width_x;
@@ -25,7 +28,7 @@ public class Enemy extends View{
      * {-1,-1} -> -x,-y
      * {-1,1}  -> -x,+y
      * {1,-1}  -> +x,-y**/
-    private int[] direction;
+    private int direction;
 
 
 
@@ -38,9 +41,8 @@ public class Enemy extends View{
         //Recupera dimensoes da imagem
         setEnemyWidth_x(getEnemy().getIntrinsicWidth());
         setEnemyHeight_y(getEnemy().getIntrinsicHeight());
-        direction=new int[2];
-        direction[0] =  1;
-        direction[1] = -1;
+        Random rand = new Random();
+        direction = rand.nextInt()%2;
     }
 
     public void drawEnemy(Canvas canvas){
@@ -48,7 +50,14 @@ public class Enemy extends View{
         getEnemy().draw(canvas);
     }
 
-
+  public void moveNormallyRight()
+  {
+      incrementX();
+  }
+    public void moveNormallyLeft()
+    {
+        decrementX();
+    }
 
     public void incrementX(){
         this.x++;
@@ -71,6 +80,7 @@ public class Enemy extends View{
 
     public void setxEnemy(int xEnemy) {
         this.x = xEnemy/8+(xEnemy*((id%5))/6);
+        widthScreen=xEnemy;
     }
 
     public int getyEnemy() {
@@ -79,6 +89,7 @@ public class Enemy extends View{
 
     public void setyEnemy(int yEnemy) {
         this.y = (yEnemy*(id/5)/10);
+        heightScreen=yEnemy;
     }
 
     public int getEnemyWidth_x() {
@@ -97,47 +108,61 @@ public class Enemy extends View{
         this.Height_y = EnemyHeight_y;
     }
 
-    public int getdirectionX() {
-        return direction[0];
+    public int getdirection() {
+        return direction;
     }
-    public int getdirectionY() {
-        return direction[1];
-    }
-    /**{1,1}   -> +x,+y
+    /**-----------{1,1}   -> +x,+y
      * {-1,-1} -> -x,-y
      *
-     * {-1,1}  -> -x,+y
+     *-------- {-1,1}  -> -x,+y
      * {1,-1}  -> +x,-y**/
-    public void setdirection(int xUnitario,int yUnitario ) {
+
+   /* public void setdirection(int xUnitario,int yUnitario ) {
         if(xUnitario != 1 && xUnitario != -1 || yUnitario != 1 && yUnitario != -1 ){
             return;
         }
         this.direction[0] = xUnitario;
         this.direction[1] = yUnitario;
-    }
+    }*/
 
     public void move(){
-        //incrementX();
-        // incrementY();
-        // incrementX();
 
-        //xBall= 250+(int) (300 * Math.cos((Math.PI/4)*yBall));
-        if(direction[0]==1 && direction[1]==1){
+        if(x==widthScreen && direction==0)
+        {
+            x=0;
+        }
+
+        if(x==0 && direction==1)
+        {
+            x=widthScreen;
+        }
+
+        if(y==heightScreen)
+        {
+            y=0;
+        }
+
+        if(direction==0)
+        {
             incrementX();
             incrementY();
-        }else if(direction[0]==-1 && direction[1]==-1){
-            decrementX();
-            decrementY();
-        }else if(direction[0]==-1 && direction[1]==1){
+        }
+        else
+        {
             decrementX();
             incrementY();
-        }else if(direction[0]==1 && direction[1]==-1){
-            incrementX();
-            decrementY();
         }
     }
 
+    public void setAtPosition()
+    {
+       this.position=false;
+    }
 
+    public boolean atPosition()
+    {
+        return position;
+    }
 
     public Drawable getEnemy() {
         return enemy;
