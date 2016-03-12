@@ -85,7 +85,7 @@ public class GameGalaxianView extends View {
             }
         }
 
-        controlBall = new ControlGameGalaxian(handler,larguraTela,alturaTela,nave,enemies);
+        controlBall = new ControlGameGalaxian(handler,larguraTela,alturaTela,nave,enemies,getContext());
         controlBall.start();
 
     }
@@ -97,10 +97,12 @@ public class GameGalaxianView extends View {
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         nave.drawNave(canvas);
+
         for(int x=0; x<enemies.size();x++)
         {
             if(enemies.get(x)!=null) {
                 enemies.get(x).drawEnemy(canvas);
+                enemies.get(x).drawShots(canvas);
             }
         }
     }

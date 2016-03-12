@@ -1,5 +1,6 @@
 package com.example.mateus.gamegalaxianatari;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
@@ -27,11 +28,13 @@ public class ControlGameGalaxian extends Thread {
     private int boundleft;
     private int boundright;
     private int atual=-1;
+    private Context ctx;
+    private int ntiro=0;
 
     private Handler handler;
 
-    public ControlGameGalaxian(Handler h, int screenWidth_x, int screenHeight_y, Nave r, ArrayList<Enemy> en) {
-
+    public ControlGameGalaxian(Handler h, int screenWidth_x, int screenHeight_y, Nave r, ArrayList<Enemy> en, Context ct) {
+ctx=ct;
         this.handler = h;
 
         this.screenWidth_x = screenWidth_x;
@@ -75,8 +78,16 @@ public class ControlGameGalaxian extends Thread {
                 else
                 {
                     if( enemies.get(atual)!=null) {
+                        if (ntiro<=0) {
+                            ShotEnemy ns = new ShotEnemy(ctx, enemies.get(atual).nextX() + enemies.get(atual).getEnemyWidth_x() / 2 + 10, enemies.get(atual).nextY() + enemies.get(atual).getEnemyHeight_y() / 2 + 15);
+                            enemies.get(atual).getArrayShotsEnemy().add(ns);
+                            Random rand = new Random();
+                            ntiro = (rand.nextInt()*10000)%300;
+                        }
                         enemies.get(atual).setAtPosition();
                         enemies.get(atual).move();
+                        enemies.get(atual).moveShots();
+                        ntiro--;
                     }
                     else
                         atual=-1;

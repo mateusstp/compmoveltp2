@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -29,6 +30,16 @@ public class Enemy extends View{
      * {-1,1}  -> -x,+y
      * {1,-1}  -> +x,-y**/
     private int direction;
+private ArrayList<ShotEnemy> arrayShotsEnemy;
+
+    public ArrayList<ShotEnemy> getArrayShotsEnemy() {
+        return arrayShotsEnemy;
+    }
+
+    public void setArrayShotsEnemy(ArrayList<ShotEnemy> arrayShotsEnemy) {
+        this.arrayShotsEnemy = arrayShotsEnemy;
+    }
+
 
 
 
@@ -43,6 +54,7 @@ public class Enemy extends View{
         setEnemyHeight_y(getEnemy().getIntrinsicHeight());
         Random rand = new Random();
         direction = rand.nextInt()%2;
+        arrayShotsEnemy=new ArrayList<>();
     }
 
     public void drawEnemy(Canvas canvas){
@@ -170,6 +182,59 @@ public class Enemy extends View{
 
     public void setEnemy(Drawable en) {
         this.enemy = en;
+    }
+
+    public void moveShots(){
+        if(arrayShotsEnemy != null){
+            for(int i =0; i < arrayShotsEnemy.size();i++){
+                arrayShotsEnemy.get(i).moveShot();
+            }
+        }
+
+    }
+
+    public void drawShots(Canvas canvas){
+        if(arrayShotsEnemy != null){
+            for(int i =0; i < arrayShotsEnemy.size();i++){
+                arrayShotsEnemy.get(i).drawShotEnemy(canvas);
+            }
+        }
+
+    }
+
+    public int nextX(){
+        if(direction==0)
+        {
+            if(x+1==widthScreen)
+            {
+                return x;
+            }
+            else
+            {
+                return x+1;
+            }
+        }
+        else
+        {
+            if(x-1==0)
+            {
+                return x;
+            }
+            else
+            {
+                return x-1;
+            }
+        }
+    }
+
+    public int nextY(){
+
+            if(y+1==heightScreen)
+            {
+                return y;
+            }
+        else
+                return y+1;
     }
 }
 
