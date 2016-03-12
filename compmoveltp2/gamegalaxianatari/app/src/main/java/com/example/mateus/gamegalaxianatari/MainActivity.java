@@ -11,11 +11,7 @@ public class MainActivity extends AppCompatActivity {
         //setContentView(R.layout.activity_main);
         //TouchScreenView view = new TouchScreenView(this);
         //setContentView(view);
-
         GameGalaxianView gpv = new GameGalaxianView(this);
         setContentView(gpv);
-
-
-
     }
 }

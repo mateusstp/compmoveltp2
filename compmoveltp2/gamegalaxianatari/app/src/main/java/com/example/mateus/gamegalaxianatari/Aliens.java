@@ -93,7 +93,6 @@ public class Aliens extends View{
     public int getBallHeight_y() {
         return ballHeight_y;
     }
-
     public void setBallHeight_y(int ballHeight_y) {
         this.ballHeight_y = ballHeight_y;
     }

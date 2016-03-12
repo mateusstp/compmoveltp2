@@ -3,6 +3,8 @@ package com.example.mateus.gamegalaxianatari;
 import android.os.Handler;
 import android.os.Message;
 
+import java.util.ArrayList;
+
 //import java.util.logging.Handler;
 
 
@@ -16,6 +18,7 @@ public class ControlGameGalaxian extends Thread {
 
     Aliens ball;
     Nave nave;
+    ArrayList<Enemy> enemies;
     private int screenWidth_x, screenHeight_y;
 
     private int boundtop;
@@ -25,7 +28,7 @@ public class ControlGameGalaxian extends Thread {
 
     private Handler handler;
 
-    public ControlGameGalaxian(Handler h, int screenWidth_x, int screenHeight_y, Aliens ball, Nave r) {
+    public ControlGameGalaxian(Handler h, int screenWidth_x, int screenHeight_y, Aliens ball, Nave r, ArrayList<Enemy> en) {
 
         this.handler = h;
 
@@ -34,6 +37,8 @@ public class ControlGameGalaxian extends Thread {
 
         this.ball = ball;
         this.nave = r;
+
+        this.enemies=en;
 
         boundtop = 0;
         bounddown = screenHeight_y;

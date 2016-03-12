@@ -7,12 +7,13 @@ import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+
 //import java.util.logging.Handler;
 
 /**
  * Created by mateus on 10/02/16.
  */
-
 public class GameGalaxianView extends View {
 
     private static final String CATEGORIA = "AppNum53";
@@ -24,12 +25,36 @@ public class GameGalaxianView extends View {
     private ControlGameGalaxian controlBall;
     private Aliens ball;
     private Nave nave;
+    private Enemy en1;
+    private ArrayList<Enemy> enemies;
 
     public GameGalaxianView(Context context) {
         super(context, null);
 
         ball = new Aliens(context);
         nave = new Nave(context);
+        enemies = new ArrayList<Enemy>();
+        enemies.add(new Enemy(context, 0));
+        enemies.add(new Enemy(context, 1));
+        enemies.add(new Enemy(context, 2));
+        enemies.add(new Enemy(context, 3));
+        enemies.add(new Enemy(context, 4));
+        enemies.add(new Enemy(context, 5));
+        enemies.add(new Enemy(context, 6));
+        enemies.add(new Enemy(context, 7));
+        enemies.add(new Enemy(context, 8));
+        enemies.add(new Enemy(context, 9));
+        enemies.add(new Enemy(context, 10));
+        enemies.add(new Enemy(context, 11));
+        enemies.add(new Enemy(context, 12));
+        enemies.add(new Enemy(context, 13));
+        enemies.add(new Enemy(context, 14));
+        enemies.add(new Enemy(context, 15));
+        enemies.add(new Enemy(context, 16));
+        enemies.add(new Enemy(context, 17));
+        enemies.add(new Enemy(context, 18));
+        enemies.add(new Enemy(context,19));
+
         setFocusable(true);
 
     }
@@ -56,7 +81,16 @@ public class GameGalaxianView extends View {
         ball.setxBall(width / 2 - (ball.getBallWidth_x() / 2));
         ball.setyBall(height / 2 - (ball.getBallHeight_y() / 2));
 
-        controlBall = new ControlGameGalaxian(handler,larguraTela,alturaTela,ball,nave);
+        for(int x=0; x<enemies.size();x++)
+        {
+            enemies.get(x).setEnemyHeight_y(height/12);
+            enemies.get(x).setEnemyWidth_x(width / 18);
+            enemies.get(x).setxEnemy(width);
+            enemies.get(x).setyEnemy(height);
+
+        }
+
+        controlBall = new ControlGameGalaxian(handler,larguraTela,alturaTela,ball,nave,enemies);
         controlBall.start();
 
     }
@@ -69,6 +103,10 @@ public class GameGalaxianView extends View {
         super.onDraw(canvas);
         nave.drawNave(canvas);
         ball.drawBall(canvas);
+        for(int x=0; x<enemies.size();x++)
+        {
+            enemies.get(x).drawEnemy(canvas);
+        }
     }
 
 
