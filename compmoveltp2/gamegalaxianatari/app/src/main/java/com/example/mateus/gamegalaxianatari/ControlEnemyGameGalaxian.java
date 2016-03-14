@@ -14,7 +14,7 @@ import java.util.Random;
  * Created by mateus on 10/02/16.
  */
 
-public class ControlGameGalaxian extends Thread {
+public class ControlEnemyGameGalaxian extends Thread {
 
     private static final String CATEGORIA = "AppNum53";
 
@@ -32,7 +32,7 @@ public class ControlGameGalaxian extends Thread {
     int gameover=1;
     private Handler handler;
 
-    public ControlGameGalaxian(Handler h, int screenWidth_x, int screenHeight_y, Nave r, ArrayList<Enemy> en, Context ct) {
+    public ControlEnemyGameGalaxian(Handler h, int screenWidth_x, int screenHeight_y, Nave r, ArrayList<Enemy> en, Context ct) {
         ctx=ct;
         this.handler = h;
 
