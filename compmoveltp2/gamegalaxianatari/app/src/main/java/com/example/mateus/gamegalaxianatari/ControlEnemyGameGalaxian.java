@@ -3,6 +3,7 @@ package com.example.mateus.gamegalaxianatari;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -58,18 +59,21 @@ public class ControlEnemyGameGalaxian extends Thread {
                 //defino um codigo para controle.
               //  message.what = 1;
                 //delay
-                Thread.sleep(6);
+                Thread.sleep(4);
               //  collisionShotEnemyNave();
                 //defino um codigo para controle.
                 message.what = gameover;
-                collisionShotNaveEnemy();
-                nave.moveShots();
+             //   collisionShotNaveEnemy();
+               // nave.moveShots();
+
+
+
                 if(atual==-1)
                 {
                     int next;
                     Random rand = new Random();
                     next = (rand.nextInt()*1000)%21;
-                    if( enemies.get(next)!=null) {
+                    if(enemies.get(next).isAlive()) {
                         enemies.get(next).setAtPosition();
                         enemies.get(next).move();
                         atual=next;
@@ -78,7 +82,7 @@ public class ControlEnemyGameGalaxian extends Thread {
                 }
                 else
                 {
-                    if( enemies.get(atual)!=null) {
+                    if( enemies.get(atual).isAlive()) {
                         if (ntiro<=0) {
                             ShotEnemy ns = new ShotEnemy(ctx, enemies.get(atual).nextX() + enemies.get(atual).getEnemyWidth_x() / 2 + 10, enemies.get(atual).nextY() + enemies.get(atual).getEnemyHeight_y() / 2 + 15);
                             enemies.get(atual).getArrayShotsEnemy().add(ns);
@@ -87,7 +91,6 @@ public class ControlEnemyGameGalaxian extends Thread {
                         }
                         enemies.get(atual).setAtPosition();
                         enemies.get(atual).move();
-                        enemies.get(atual).moveShots();
                         ntiro--;
                     }
                     else
@@ -95,26 +98,32 @@ public class ControlEnemyGameGalaxian extends Thread {
                 }
 
                 for(int i=0; i<enemies.size();i++) {
-                    if((enemies.get(i).getxEnemy()+enemies.get(i).getEnemyWidth_x())==screenWidth_x)
-                    {
-                        right=false;
-                        break;
-                    }
+               //     if(enemies.get(i)!=null && !enemies.get(i).atPosition())
+                    if (enemies.get(i).getArrayShotsEnemy().size()>0||enemies.get(i).getArrayShotsEnemy()==null)
+                        enemies.get(i).moveShots();
 
-                    if (enemies.get(i).getxEnemy() == 0) {
-                        right = true;
-                        break;
-                    }
+                        if((enemies.get(i).getxEnemy()+enemies.get(i).getEnemyWidth_x())==screenWidth_x)
+                        {
+                            right=false;
+                            break;
+                        }
+
+                        if (enemies.get(i).getxEnemy() == 0) {
+                            right = true;
+                            break;
+                        }
                 }
                 for(int x=0; x<enemies.size();x++)
                 {
-                    if(enemies.get(x)!=null && enemies.get(x).atPosition()==true) {
+                    if(enemies.get(x).isAlive() && enemies.get(x).atPosition()==true) {
                         if (right)
                             enemies.get(x).moveNormallyRight();
                         else
                             enemies.get(x).moveNormallyLeft();
                     }
                 }
+                Log.d("teste", "x");
+
                 handler.sendMessage(message);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -122,7 +131,7 @@ public class ControlEnemyGameGalaxian extends Thread {
         }
     }
 
-    private void collisionShotNaveEnemy() {
+    /*private void collisionShotNaveEnemy() {
 
         for (int ishot = 0; ishot < nave.getArrayShotsNave().size(); ishot++) {
             for (int ien = 0; ien < enemies.size(); ien++) {
@@ -136,12 +145,12 @@ public class ControlEnemyGameGalaxian extends Thread {
         }
     }
 
-    /*private void collisionShotEnemyNave() {
+    private void collisionShotEnemyNave() {
         for (int ien = 0; ien < enemies.size(); ien++) {
             for (int ishoten = 0; ishoten < enemies.get(ien).getArrayShotsEnemy().size(); ishoten++) {
                 boolean collision = nave.getNaveDrawable().copyBounds().contains(enemies.get(ien).getArrayShotsEnemy().get(ishoten).getxShotEnemy(), enemies.get(ien).getArrayShotsEnemy().get(ishoten).getyShotEnemy());
                 if (collision) {
-                   // gameover = 0;
+                    gameover = 0;
                 }
             }
         }

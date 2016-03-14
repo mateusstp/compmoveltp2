@@ -14,5 +14,10 @@ public class MainActivity extends AppCompatActivity {
         //setContentView(view);
         GameGalaxianView gpv = new GameGalaxianView(this);
         setContentView(gpv);
+
     }
+
+
+
+
 }

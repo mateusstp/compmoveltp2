@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Message;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 //import java.util.logging.Handler;
 
@@ -54,67 +53,15 @@ public class ControlNaveGameGalaxian extends Thread {
     public void run() {
         for (;;) {
             try {
+                gameover=1;
                 Message message = new Message();
+                Thread.sleep(2);
+                collisionShotEnemyNave();
                 //defino um codigo para controle.
-              //  message.what = 1;
-                //delay
-                Thread.sleep(6);
-              //  collisionShotEnemyNave();
-                //defino um codigo para controle.
-                message.what = gameover;
                 collisionShotNaveEnemy();
+                collisionEnemyNave();
                 nave.moveShots();
-                if(atual==-1)
-                {
-                    int next;
-                    Random rand = new Random();
-                    next = (rand.nextInt()*1000)%21;
-                    if( enemies.get(next)!=null) {
-                        enemies.get(next).setAtPosition();
-                        enemies.get(next).move();
-                        atual=next;
-                    }
-
-                }
-                else
-                {
-                    if( enemies.get(atual)!=null) {
-                        if (ntiro<=0) {
-                            ShotEnemy ns = new ShotEnemy(ctx, enemies.get(atual).nextX() + enemies.get(atual).getEnemyWidth_x() / 2 + 10, enemies.get(atual).nextY() + enemies.get(atual).getEnemyHeight_y() / 2 + 15);
-                            enemies.get(atual).getArrayShotsEnemy().add(ns);
-                            Random rand = new Random();
-                            ntiro = (rand.nextInt()*10000)%300;
-                        }
-                        enemies.get(atual).setAtPosition();
-                        enemies.get(atual).move();
-                        enemies.get(atual).moveShots();
-                        ntiro--;
-                    }
-                    else
-                        atual=-1;
-                }
-
-                for(int i=0; i<enemies.size();i++) {
-                    if((enemies.get(i).getxEnemy()+enemies.get(i).getEnemyWidth_x())==screenWidth_x)
-                    {
-                        right=false;
-                        break;
-                    }
-
-                    if (enemies.get(i).getxEnemy() == 0) {
-                        right = true;
-                        break;
-                    }
-                }
-                for(int x=0; x<enemies.size();x++)
-                {
-                    if(enemies.get(x)!=null && enemies.get(x).atPosition()==true) {
-                        if (right)
-                            enemies.get(x).moveNormallyRight();
-                        else
-                            enemies.get(x).moveNormallyLeft();
-                    }
-                }
+                message.what = gameover;
                 handler.sendMessage(message);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -123,29 +70,60 @@ public class ControlNaveGameGalaxian extends Thread {
     }
 
     private void collisionShotNaveEnemy() {
-
         for (int ishot = 0; ishot < nave.getArrayShotsNave().size(); ishot++) {
             for (int ien = 0; ien < enemies.size(); ien++) {
                 boolean collision = enemies.get(ien).getEnemy().copyBounds().contains(nave.getArrayShotsNave().get(ishot).getxShotNave(), nave.getArrayShotsNave().get(ishot).getyShotNave());
-                if (collision) {
-                    enemies.remove(ien);
+                if (collision && enemies.get(ien).isAlive()) {
+                   // enemies.remove(ien);
+                   enemies.get(ien).dead();
+                    nave.getArrayShotsNave().remove(ishot);
+                }else if(nave.getArrayShotsNave().get(ishot).getyShotNave()<=0){
                     nave.getArrayShotsNave().remove(ishot);
                 }
 
+
             }
         }
+
+        boolean alive=false;
+
+        for(int x=0; x<enemies.size();x++)
+        {
+
+            if(enemies.get(x).isAlive())
+            {
+                alive=true;
+            }
+        }
+        if (!alive)
+            gameover=2;
+
+
     }
 
-    /*private void collisionShotEnemyNave() {
+    private void collisionShotEnemyNave() {
         for (int ien = 0; ien < enemies.size(); ien++) {
             for (int ishoten = 0; ishoten < enemies.get(ien).getArrayShotsEnemy().size(); ishoten++) {
                 boolean collision = nave.getNaveDrawable().copyBounds().contains(enemies.get(ien).getArrayShotsEnemy().get(ishoten).getxShotEnemy(), enemies.get(ien).getArrayShotsEnemy().get(ishoten).getyShotEnemy());
                 if (collision) {
-                   // gameover = 0;
+                    gameover = 0;
+
                 }
             }
         }
-    }*/
+    }
+
+    private void collisionEnemyNave() {
+        for (int ien = 0; ien < enemies.size(); ien++) {
+            if(!enemies.get(ien).atPosition()){
+                boolean collision = nave.getNaveDrawable().copyBounds().contains(enemies.get(ien).getxEnemy(), enemies.get(ien).getyEnemy());
+                if (collision) {
+                    gameover = 0;
+                }
+            }
+
+        }
+    }
 }
 
 

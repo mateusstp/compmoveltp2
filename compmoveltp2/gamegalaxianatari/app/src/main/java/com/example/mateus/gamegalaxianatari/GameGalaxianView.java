@@ -1,5 +1,6 @@
 package com.example.mateus.gamegalaxianatari;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,6 +10,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -24,16 +26,20 @@ public class GameGalaxianView extends View {
     private boolean down;
     private int larguraTela, alturaTela;
 
-    private Handler handler;
-    private ControlGameGalaxian controlGalaxian;
+    private Handler handlerNave,handlerEnemy,handlerShotsEnemy ;
+    private ControlEnemyGameGalaxian controlEnemyGalaxian;
+    private ControlNaveGameGalaxian controlNaveGalaxian;
+    private ControlShotsEnemyGameGalaxian controlShotEnemyGalaxian;
     private Nave nave;
     private ArrayList<Enemy> enemies;
+    private ArrayList<ShotEnemy> shotsEnemies;
     private boolean move=false;
-
+    int statusjogo=1;
     public GameGalaxianView(Context context) {
         super(context, null);
 
         nave = new Nave(context);
+        shotsEnemies = new ArrayList<ShotEnemy>();
         enemies = new ArrayList<Enemy>();
         enemies.add(new Enemy(context, 0));
         enemies.add(new Enemy(context, 1));
@@ -68,7 +74,14 @@ public class GameGalaxianView extends View {
         this.alturaTela = height;
         this.larguraTela = width;
 
-        handler = new Handler() {
+        handlerNave     = new Handler() {
+            @Override
+            public void handleMessage(Message msg) { //chamo um método para melhor organização.
+                updateUI(msg);
+            }
+        };
+
+        handlerEnemy     = new Handler() {
             @Override
             public void handleMessage(Message msg) { //chamo um método para melhor organização.
                 updateUI(msg);
@@ -76,13 +89,20 @@ public class GameGalaxianView extends View {
         };
 
 
-        nave.setyNave(height - nave.getNaveHeight_y()-30);
+        handlerShotsEnemy = new Handler() {
+            @Override
+            public void handleMessage(Message msg) { //chamo um método para melhor organização.
+                updateUI(msg);
+            }
+        };
+
+        nave.setyNave(height - nave.getNaveHeight_y() - 30);
         nave.setxNave(width / 2 - (nave.getNaveWidth_x() / 2));
         xN=nave.getxNave();
 
         for(int x=0; x<enemies.size();x++)
         {
-            if(enemies.get(x)!=null) {
+            if(enemies.get(x).isAlive()) {
                 enemies.get(x).setEnemyHeight_y(height / 12);
                 enemies.get(x).setEnemyWidth_x(width / 18);
                 enemies.get(x).setxEnemy(width);
@@ -90,8 +110,12 @@ public class GameGalaxianView extends View {
             }
         }
 
-        controlGalaxian = new ControlGameGalaxian(handler,larguraTela,alturaTela,nave,enemies,getContext());
-        controlGalaxian.start();
+        controlEnemyGalaxian= new ControlEnemyGameGalaxian(handlerEnemy,larguraTela,alturaTela,nave,enemies,getContext());
+        controlEnemyGalaxian.start();
+        controlNaveGalaxian = new ControlNaveGameGalaxian(handlerNave,larguraTela,alturaTela,nave,enemies,getContext());
+        controlNaveGalaxian.start();
+        //controlShotEnemyGalaxian = new ControlShotsEnemyGameGalaxian(handlerShotsEnemy,nave,alturaTela,shotsEnemies,getContext());
+        //controlNaveGalaxian.start();
 
     }
 
@@ -105,10 +129,11 @@ public class GameGalaxianView extends View {
         nave.drawShots(canvas);
         for(int x=0; x<enemies.size();x++)
         {
-            if(enemies.get(x)!=null) {
+            if(enemies.get(x).isAlive()) {
                 enemies.get(x).drawEnemy(canvas);
-                enemies.get(x).drawShots(canvas);
             }
+            enemies.get(x).drawShots(canvas);
+
         }
     }
 
@@ -236,9 +261,35 @@ public class GameGalaxianView extends View {
            // String texto = (String) msg.obj;
             //defino no meu TextView o texto.
             invalidate();
-        }
-    }
+        }else if (msg.what == 0) { //Converto o object para string (pois foi o que eu passei)
+            // String texto = (String) msg.obj;
+            //defino no meu TextView o texto.
+            CharSequence text = "PERDEEEEEEEEUUUUU!";
+            int duration = Toast.LENGTH_SHORT;
 
+            Toast toast = Toast.makeText(getContext(), text, duration);
+            toast.show();
+            controlNaveGalaxian.interrupt();
+            controlEnemyGalaxian.interrupt();
+            ((Activity)getContext()).finish();
+
+        }
+        else if(msg.what == 2)
+        {
+            CharSequence text = "GANHOUU!";
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(getContext(), text, duration);
+            toast.show();
+            controlNaveGalaxian.interrupt();
+            controlEnemyGalaxian.interrupt();
+            ((Activity)getContext()).finish();
+
+
+
+        }
+
+    }
 
 
 }

@@ -34,8 +34,8 @@ public class Nave extends View {
         setNaveDrawable(context.getResources().getDrawable(R.drawable.nave));
         setArrayShotsNave(new ArrayList<ShotNave>());
         //Recupera dimensoes da imagem
-        setNaveWidth_x(getNaveDrawable().getIntrinsicWidth()-30);
-        setNaveHeight_y(getNaveDrawable().getIntrinsicHeight()-30);
+        setNaveWidth_x(getNaveDrawable().getIntrinsicWidth()-10);
+        setNaveHeight_y(getNaveDrawable().getIntrinsicHeight()-10);
         setdirection(1);
     }
 

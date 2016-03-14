@@ -3,6 +3,7 @@ package com.example.mateus.gamegalaxianatari;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -25,9 +26,26 @@ public class Enemy extends View{
     private int Height_y;
     private int id;
     private int tipo;
+    private boolean alive=true;
+
+
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void dead() {
+        this.alive = false;
+        x=-1;
+        y=-1;
+        Width_x=0;
+        Height_y=0;
+    }
+
     /**{1,1}   -> +x,+y
      * {-1,-1} -> -x,-y
      * {-1,1}  -> -x,+y
+
      * {1,-1}  -> +x,-y**/
     private int direction;
 private ArrayList<ShotEnemy> arrayShotsEnemy;
@@ -138,21 +156,31 @@ private ArrayList<ShotEnemy> arrayShotsEnemy;
     }*/
 
     public void move(){
+       // Log.d("testes", "antes"+x+";"+y);
 
-        if(x==widthScreen && direction==0)
+        //if(x>=widthScreen && direction==0)
+        if(x > widthScreen && y > heightScreen)
         {
             x=0;
+            y=0;
         }
 
-        if(x==0 && direction==1)
+        if(x < 0 && y > heightScreen)
+        {
+            x=widthScreen;
+            y=0;
+        }
+       /* if(x<=0 && direction==1)
         {
             x=widthScreen;
         }
 
-        if(y==heightScreen)
+
+
+        if(y>=heightScreen)
         {
             y=0;
-        }
+        }*/
 
         if(direction==0)
         {
@@ -164,6 +192,8 @@ private ArrayList<ShotEnemy> arrayShotsEnemy;
             decrementX();
             incrementY();
         }
+      //  Log.d("testes", "depois"+x+";"+y);
+
     }
 
     public void setAtPosition()
@@ -205,35 +235,19 @@ private ArrayList<ShotEnemy> arrayShotsEnemy;
     public int nextX(){
         if(direction==0)
         {
-            if(x+1==widthScreen)
-            {
-                return x;
-            }
-            else
-            {
+
                 return x+1;
-            }
+
         }
         else
         {
-            if(x-1==0)
-            {
-                return x;
-            }
-            else
-            {
                 return x-1;
-            }
+
         }
     }
 
     public int nextY(){
 
-            if(y+1==heightScreen)
-            {
-                return y;
-            }
-        else
                 return y+1;
     }
 }

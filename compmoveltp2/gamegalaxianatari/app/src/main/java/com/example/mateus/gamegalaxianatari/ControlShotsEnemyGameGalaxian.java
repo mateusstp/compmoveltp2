@@ -19,7 +19,7 @@ public class ControlShotsEnemyGameGalaxian extends Thread {
     private static final String CATEGORIA = "AppNum53";
 
     Nave nave;
-    ArrayList<Enemy> enemies;
+    ArrayList<ShotEnemy> listShotEnemies;
     private int screenWidth_x, screenHeight_y;
     private boolean enemyActivated=false;
     private int boundtop;
@@ -32,22 +32,15 @@ public class ControlShotsEnemyGameGalaxian extends Thread {
     int gameover=1;
     private Handler handler;
 
-    public ControlShotsEnemyGameGalaxian(Handler h, int screenWidth_x, int screenHeight_y, Nave r, ArrayList<Enemy> en, Context ct) {
+    public ControlShotsEnemyGameGalaxian(Handler h, Nave n ,int screenHeight,ArrayList<ShotEnemy> shoten, Context ct) {
         ctx=ct;
         this.handler = h;
-
-        this.screenWidth_x = screenWidth_x;
-        this.screenHeight_y = screenHeight_y;
-
-
-        this.nave = r;
-
-        this.enemies=en;
-
         boundtop = 0;
-        bounddown = screenHeight_y;
+        screenHeight_y=screenHeight;
         boundleft = 0;
         boundright = screenWidth_x;
+        listShotEnemies=shoten;
+        nave =n;
     }
 
     boolean right=true;
@@ -58,13 +51,14 @@ public class ControlShotsEnemyGameGalaxian extends Thread {
                 //defino um codigo para controle.
               //  message.what = 1;
                 //delay
-                Thread.sleep(6);
+                Thread.sleep(3);
+                collisionShotEnemyNave();
               //  collisionShotEnemyNave();
                 //defino um codigo para controle.
                 message.what = gameover;
              //   collisionShotNaveEnemy();
                // nave.moveShots();
-                if(atual==-1)
+                /*if(atual==-1)
                 {
                     int next;
                     Random rand = new Random();
@@ -85,7 +79,7 @@ public class ControlShotsEnemyGameGalaxian extends Thread {
                         }
 
                     }*/
-                    if( enemies.get(atual)!=null) {
+                    /*if( enemies.get(atual)!=null) {
                     //if( acertou) {
                         if (ntiro<=0) {
                             ShotEnemy ns = new ShotEnemy(ctx, enemies.get(atual).nextX() + enemies.get(atual).getEnemyWidth_x() / 2 + 10, enemies.get(atual).nextY() + enemies.get(atual).getEnemyHeight_y() / 2 + 15);
@@ -122,7 +116,7 @@ public class ControlShotsEnemyGameGalaxian extends Thread {
                         else
                             enemies.get(x).moveNormallyLeft();
                     }
-                }
+                }*/
                 handler.sendMessage(message);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -130,6 +124,31 @@ public class ControlShotsEnemyGameGalaxian extends Thread {
         }
     }
 
+    private void collisionShotEnemyNave() {
+        for (int ien = 0; ien < listShotEnemies.size(); ien++) {
+            boolean collision = nave.getNaveDrawable().copyBounds().contains(listShotEnemies.get(ien).getxShotEnemy(), listShotEnemies.get(ien).getyShotEnemy());
+            if (collision) {
+                gameover = 0;
+            }else if(listShotEnemies.get(ien).getyShotEnemy()>=screenHeight_y){
+                listShotEnemies.remove(ien);
+            }
+
+        }
+    }
+
+   /*private void collisionShotNaveEnemy() {
+
+        for (int ishot = 0; ishot < nave.getArrayShotsNave().size(); ishot++) {
+            for (int ien = 0; ien < enemies.size(); ien++) {
+                boolean collision = enemies.get(ien).getEnemy().copyBounds().contains(nave.getArrayShotsNave().get(ishot).getxShotNave(), nave.getArrayShotsNave().get(ishot).getyShotNave());
+                if (collision) {
+                    enemies.remove(ien);
+                    nave.getArrayShotsNave().remove(ishot);
+                }
+
+            }
+        }
+    }*/
     /*private void collisionShotNaveEnemy() {
 
         for (int ishot = 0; ishot < nave.getArrayShotsNave().size(); ishot++) {
@@ -142,18 +161,9 @@ public class ControlShotsEnemyGameGalaxian extends Thread {
 
             }
         }
-    }
-
-    private void collisionShotEnemyNave() {
-        for (int ien = 0; ien < enemies.size(); ien++) {
-            for (int ishoten = 0; ishoten < enemies.get(ien).getArrayShotsEnemy().size(); ishoten++) {
-                boolean collision = nave.getNaveDrawable().copyBounds().contains(enemies.get(ien).getArrayShotsEnemy().get(ishoten).getxShotEnemy(), enemies.get(ien).getArrayShotsEnemy().get(ishoten).getyShotEnemy());
-                if (collision) {
-                    gameover = 0;
-                }
-            }
-        }
     }*/
+
+
 }
 
 
